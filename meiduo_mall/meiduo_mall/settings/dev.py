@@ -19,8 +19,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 将'app'目录添加到'sys.path'搜索路径中
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-for path in sys.path:
-    print(path)
+# for path in sys.path:
+#     print(path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'users.apps.UsersConfig'  # 需要在sys.path搜索路径中添加目录apps的路径
+    'users.apps.UsersConfig',  # 需要在sys.path搜索路径中添加目录apps的路径
+    'verifications.apps.VerificationsConfig'
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,15 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
+    },
+    # 保存短信验证码内容
+    "verify_codes": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            # 指定缓存空间对应的redis地址
+            "LOCATION": "redis://127.0.0.1:6379/2",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
     }
 }
 
@@ -156,6 +166,15 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # 指定session信息存储到缓存空间名称
 SESSION_CACHE_ALIAS = "session"
+
+# 手动获取redis链接
+# from redis import StrictRedis
+# redis_conn = StrictRedis(host=, port=, db=2)
+
+
+# 通过Django-redis获取redis链接
+# from django_redis import get_redis_connection
+# redis_conn = get_redis_connection('verify_codes')  # 封装了上述的获取方式,返回的就是StrictRedis类对象
 
 
 # 日志的存储设置
@@ -211,3 +230,7 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo_mall.utils.exceptions.exception_handler',
 }
+
+# 指定Django认证系统所使用的用户模型类
+# AUTH_USER_MODEL = '应用名.模型类'
+AUTH_USER_MODEL = 'users.User'  # 指明使用的用户模型类  表示:应用名.模型类名
