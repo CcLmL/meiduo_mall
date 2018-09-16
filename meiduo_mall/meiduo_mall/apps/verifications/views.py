@@ -33,9 +33,18 @@ class SMSCodeView(APIView):
 
         # 1.2 在redis中保存短信验证码内容, 以'mobile'为key, 以短信验证码内容为value
         redis_conn = get_redis_connection('verify_codes')
+        # 判断60s之内是否给mobile手机发送过短信
+        send_flag = redis_conn.get('send_flag_' % mobile)  # 超过时间自动删除返回none
+
+        if send_flag:
+            return Response({'message': '发送信息过于频繁'}, status=status.HTTP_400_BAD_REQUEST)
+
         # redis_conn.set('<key>', '<value>', '<expires>')
         # redis_conn.setex('<key>', '<expires>', '<value>')  两者没有区别,就是参数的顺序不同
         redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRE, sms_code)
+
+        # 设置给'mobile'发送短信息验证码标记
+        redis_conn.setex('send_flag_' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
 
         # 1.3 使用云通讯发送短信
         expires = constants.SMS_CODE_REDIS_EXPIRE // 60 # 获取过期时间(分钟)
