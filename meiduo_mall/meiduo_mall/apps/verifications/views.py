@@ -1,5 +1,6 @@
 import random
 
+from django.conf.locale import pl
 from django.shortcuts import render
 from django_redis import get_redis_connection
 from rest_framework import status
@@ -41,10 +42,18 @@ class SMSCodeView(APIView):
 
         # redis_conn.set('<key>', '<value>', '<expires>')
         # redis_conn.setex('<key>', '<expires>', '<value>')  两者没有区别,就是参数的顺序不同
-        redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRE, sms_code)
+
+        # 因为这里运行了两次setex,即访问了两次redis,造成了性能浪费,所以我们可以使用管道
+        pl = redis_conn.pipeline()
+
+        # 向redis管道中添加命令
+        pl.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRE, sms_code)
 
         # 设置给'mobile'发送短信息验证码标记
-        redis_conn.setex('send_flag_' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+        pl.setex('send_flag_' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+
+        # 一次性执行管道中所有命令
+        pl.exectue()
 
         # 1.3 使用云通讯发送短信
         expires = constants.SMS_CODE_REDIS_EXPIRE // 60 # 获取过期时间(分钟)
