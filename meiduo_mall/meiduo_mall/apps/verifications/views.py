@@ -5,6 +5,8 @@ from django_redis import get_redis_connection
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from celery_tasks.sms.tasks import send_sms_code
 from meiduo_mall.libs.yuntongxun.sms import CCP
 from verifications import constants
 
@@ -67,4 +69,7 @@ class SMSCodeView(APIView):
         # 因为云通讯如果要发送验证码需要指定特定的手机号码
 
         # 2.返回应答,发送成功
+        # 发出发送短信的任务消息
+        send_sms_code.delay(mobile, sms_code, expires)
+
         return Response({'message': 'ok'})

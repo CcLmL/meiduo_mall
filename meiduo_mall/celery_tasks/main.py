@@ -1,5 +1,10 @@
 from celery import Celery
 
+# 设置Django运行所依赖的环境变量
+import os
+if not os.getenv('DJANGO_SETTINGS_MODULE'):
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'meiduo_mall.settings.dev'
+
 # 创建Celery类的对象,celery_tasks目录与项目是无关的
 celery_app = Celery('celery_tasks')  # 名字就是一个字符串,随便取
 
