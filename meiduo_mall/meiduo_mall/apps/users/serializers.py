@@ -38,14 +38,12 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
             }
         }
 
-
     def validate_allow(self, value):
         """是否同意协议"""
         if value != 'true':
             raise serializers.ValidationError('请同意协议')
 
         return value
-
 
     def validate_mobile(self, value):
         """
@@ -71,7 +69,6 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
 
         if password != password2:
             raise serializers.ValidationError('两次密码不一致')
-
 
         # 获取手机号
         mobile = attrs['mobile']
