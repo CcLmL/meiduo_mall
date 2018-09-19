@@ -13,10 +13,11 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
     password2 = serializers.CharField(label='确认密码', write_only=True)
     sms_code = serializers.CharField(label='短信验证码', write_only=True)
     allow = serializers.CharField(label='是否同意协议', write_only=True)
+    token = serializers.CharField(label='JWT Token', read_only=True)  # 只用于序列化
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'mobile', 'passwords2', 'sms_code', 'allow')  # 确定要进行序列化操作的字段
+        fields = ('id', 'username', 'password', 'mobile', 'passwords2', 'sms_code', 'allow', 'token')  # 确定要进行序列化操作的字段
 
         extra_kwargs = {
             'password': {
@@ -98,7 +99,21 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
         del validated_data['allow']
 
         # 保存注册用户的信息
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)  #  此时已经创建了对应的用户数据
+
+        # 由服务器生成一个jwt token数据,包含登录用户身份信息(使用扩展生成jwt token数据)
+        from rest_framework_jwt.settings import api_settings
+
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER  # 调用api_setting中的方法
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        # 生成荷载
+        payload = jwt_payload_handler(user)
+        # 生成jwt token
+        token = jwt_encode_handler(payload)
+
+        # 给user对象增加属性token,保存服务器签发jwt token数据
+        user.token = token  # 这里添加这个属性是为了给客户端返回token
 
         # 返回注册用户
         return user
