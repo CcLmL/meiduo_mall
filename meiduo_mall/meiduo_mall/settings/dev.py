@@ -269,3 +269,9 @@ CORS_ALLOW_CREDENTIALS = True  # 指明在跨域访问中，后端是否支持�
 AUTHENTICATION_BACKENDS = [
     'users.utils.UsernameMobileAuthBackend',
 ]
+
+# QQ登录开发设置
+QQ_CLIENT_ID = '101474184' # QQ开发应用APPID
+QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c' # QQ开发应用APP-KEY
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html' # 网站回调地址
+QQ_STATE = '/' # QQ登录成功之后跳转页面地址
