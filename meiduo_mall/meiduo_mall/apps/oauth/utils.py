@@ -1,3 +1,4 @@
+# 就是对QQ开发官网的文档进行了封装
 import json
 from urllib.parse import urlencode, parse_qs
 from urllib.request import urlopen
