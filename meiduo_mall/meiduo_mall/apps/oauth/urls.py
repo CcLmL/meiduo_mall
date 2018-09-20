@@ -3,4 +3,5 @@ from oauth import views
 
 urlspattern = [
     url(r'qq/authorizations/$', views.QQAuthURLView.as_view()),
+    url(r'qq/user/$', views.QQAuthUserView.as_view())
 ]

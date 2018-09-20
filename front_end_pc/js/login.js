@@ -89,7 +89,7 @@ var vm = new Vue({
                             responseType: 'json'
                         })
                         .then(response => {
-                            location.href = response.data.login_url;
+                            location.href = response.data.login_url;  //转到返回服务器返回的QQ登陆url
                         })
                         .catch(error => {
                             console.log(error.response.data);
