@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 # Create your views here.
 
 
+# 用户注册视图
 # POST /users/
 # class UserVIew(GenericAPIView):
 class UserVIew(CreateAPIView):  # 继承了mixins.CreateModelMixin(封装了post方法用于create),GenericAPIView
