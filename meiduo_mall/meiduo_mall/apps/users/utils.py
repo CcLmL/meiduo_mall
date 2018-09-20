@@ -35,6 +35,7 @@ def get_user_by_account(account):
     else:
         return user
 
+
 # 添加自定义后端用于authorizate的认证
 class UsernameMobileAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):

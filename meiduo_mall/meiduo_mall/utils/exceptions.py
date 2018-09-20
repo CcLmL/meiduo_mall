@@ -1,4 +1,4 @@
-from rest_framework.views import exception_handler as drf_exception_handler
+from rest_framework.views import exception_handler as drf_exception_handler  # 系统drf框架自带异常处理,但是部分如数据库异常的处理并没有编写,这时我们可以自己进行扩展
 import logging
 from django.db import DatabaseError
 from redis.exceptions import RedisError
@@ -19,6 +19,7 @@ def exception_handler(exc, context):
     # 调用drf框架原生的异常处理方法
     response = drf_exception_handler(exc, context)
 
+    # 在原来异常处理函数上增加新的处理
     if response is None:
         view = context['view']
         if isinstance(exc, DatabaseError) or isinstance(exc, RedisError):
