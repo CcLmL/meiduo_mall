@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^users/$', views.UserVIew.as_view()),
     # Django REST framework JWT提供了登录签发JWT的视图，可以直接使用
     url(r'^authorizations/$', obtain_jwt_token),  # obtain_jwt_token = ObtainJSONWebToken.as_view()
+    url(r'^user/$', views.UserDetailView.as_view())
 ]
