@@ -1,11 +1,39 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, CreateAPIView
+from rest_framework.generics import GenericAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.serializers import CreateUserSerializer
+from users.serializers import CreateUserSerializer, UserDetailSerializer
 from users.models import User
 from rest_framework.views import APIView
 # Create your views here.
+
+
+# 用户个人信息
+# class UserDetailView(GenericAPIView):
+class UserDetailView(RetrieveAPIView):
+    # 指定当前视图所使用的权限控制类
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserDetailSerializer
+
+    def get_object(self):  # 重写序列化器中的方法
+        """获取登陆用户"""
+        # self.request: 视图的request对象(即使没有传递request参数也可以通过这个方法获得)
+        return self.request.user
+
+    # def get(self, request):
+    #     """
+    #     获取登陆用户的信息
+    #     1. 获取登陆用户user
+    #     2. 将用户的信息序列化并返回
+    #     """
+    #     # 1. 获取登陆用户user
+    #     # user = request.user  # 能进入接口的user都是已经经过认证的
+    #     user = self.get_object()
+    #
+    #     # 2. 将用户的信息序列化并返回
+    #     serializer = self.get_serializer(user)
+    #     return Response(serializer.data)
 
 
 # 用户注册视图
