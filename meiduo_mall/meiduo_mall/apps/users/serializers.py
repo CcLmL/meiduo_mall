@@ -6,6 +6,28 @@ from rest_framework import serializers
 from users.models import User
 
 
+class EmailSerializer(serializers.ModelSerializer):
+    """用户邮箱设置序列化器"""
+    class Meta:
+        model = User
+        fields = ('id', 'email')
+
+    def update(self, instance, validated_data):
+        """
+        设置user用户的邮箱并发送邮箱认证邮件
+        instance: 创建序列化器时传递的对象
+        validated_data:验证之后的数据
+        """
+        # 设置用户的邮箱
+        email = validated_data['email']
+        instance.email = email
+        instance.save()
+
+        # TODO: 发送邮箱验证邮件
+
+        return instance
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
     """用户个人信息序列化器"""
     class Meta:

@@ -9,7 +9,40 @@ from rest_framework.views import APIView
 # Create your views here.
 
 
-# 用户个人信息
+# PUT/email/
+class EmailView(GenericAPIView):
+    # 指定当前视图所使用的权限控制类
+    permission_classes = [IsAuthenticated]
+    # serializer_class = EmailSerializer
+
+    def get_object(self):
+        """获取登陆用户"""
+        # self.request: 视图的request对象
+        return self.request.user
+
+    def put(self, request):
+        """
+        登陆用户邮箱的设置:
+        1. 获取登陆用户user
+        2. 获取参数email并进行校验(email必传,邮箱格式)
+        3. 设置user用户的邮箱并发送邮箱验证邮件
+        4. 返回应答
+        """
+        # 1. 获取登陆用户user
+        user = self.get_object()
+
+        # 2. 获取参数email并进行校验(email必传,邮箱格式)
+        serializer = self.get_serializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 3. 设置user用户的邮箱并发送邮箱验证邮件
+        serializer.save()
+
+        # 4.返回应答
+        return Response(serializer.data)
+
+
+# 用户个人信息页面
 # class UserDetailView(GenericAPIView):
 class UserDetailView(RetrieveAPIView):
     # 指定当前视图所使用的权限控制类
