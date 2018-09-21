@@ -31,7 +31,6 @@ class QQAuthUserView(GenericAPIView):
         #  3.返回响应数据
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
     def get(self, request):
         """
         获取QQ登陆用户的openid并进行校验

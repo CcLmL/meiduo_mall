@@ -17,14 +17,14 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'mobile', 'passwords2', 'sms_code', 'allow', 'token')  # 确定要进行序列化操作的字段
+        fields = ('id', 'username', 'password', 'mobile', 'password2', 'sms_code', 'allow', 'token')  # 确定要进行序列化操作的字段
 
         extra_kwargs = {
             'password': {
                 'write_only': True,  # 密码只用于进行校验,所以只需要反序列化
                 'min_length': 8,
                 'max_length': 20,
-                'error_message': {
+                'error_messages': {
                     'min_length': '仅允许8-20个字符的密码',
                     'max_length': '仅允许5-20个字符的密码',
                 }
@@ -32,7 +32,7 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
             'username': {
                 'min_length': 5,
                 'max_length': 20,
-                'error_message': {
+                'error_messages': {
                     'min_length': '仅允许5-20个字符的密码',
                     'max_length': '仅允许5-20个字符的密码',
                 }
@@ -99,7 +99,7 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
         del validated_data['allow']
 
         # 保存注册用户的信息
-        user = User.objects.create_user(**validated_data)  #  此时已经创建了对应的用户数据
+        user = User.objects.create_user(**validated_data)  # 此时已经创建了对应的用户数据
 
         # 由服务器生成一个jwt token数据,包含登录用户身份信息(使用扩展生成jwt token数据)
         from rest_framework_jwt.settings import api_settings
@@ -114,6 +114,7 @@ class CreateUserSerializer(serializers.ModelSerializer):  # 我们通过序列�
 
         # 给user对象增加属性token,保存服务器签发jwt token数据
         user.token = token  # 这里添加这个属性是为了给客户端返回token
-
+        # (因为这个序列化器对应的模型类就是User,user又是User实例,所以给user.token添加值就是给序列化器中的token字段添加值)
+        # (这里并不是将token数据存入数据库,只是给序列化器的token字段添加数据)
         # 返回注册用户
         return user
