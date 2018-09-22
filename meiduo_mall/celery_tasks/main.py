@@ -12,5 +12,5 @@ celery_app = Celery('celery_tasks')  # 名字就是一个字符串,随便取
 celery_app.config_from_object('celery_tasks.config')
 
 # 启动worker时自动发现任务
-celery_app.autodiscover_tasks(['celery_tasks.sms'])  # 自动发现任务会自动在路径下找tasks文件(所以tasks的名字是固定的)
+celery_app.autodiscover_tasks(['celery_tasks.sms', 'celery_email'])  # 自动发现任务会自动在路径下找tasks文件(所以tasks的名字是固定的)
 

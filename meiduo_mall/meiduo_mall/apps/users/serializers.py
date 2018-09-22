@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django_redis import get_redis_connection
 from rest_framework import serializers
 
+from celery_tasks.email.tasks import send_verify_email
 from users.models import User
 
 
@@ -34,13 +35,16 @@ class EmailSerializer(serializers.ModelSerializer):
         verify_url = instance.generate_verify_url()
 
         # 发送邮件
-        subject = "美多商城邮箱验证"
-        html_message = '<p>尊敬的用户您好！</p>' \
-                       '<p>感谢您使用美多商城。</p>' \
-                       '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
-                       '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+        # subject = "美多商城邮箱验证"
+        # html_message = '<p>尊敬的用户您好！</p>' \
+        #                '<p>感谢您使用美多商城。</p>' \
+        #                '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
+        #                '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+        #
+        # send_mail(subject, '', settings.EMAIL_FROM, [email], html_message=html_message)
 
-        send_mail(subject, '', settings.EMAIL_FROM, [email], html_message=html_message)
+        # 发出发送邮件的任务消息
+        send_verify_email.delay(email, verify_url)
 
         return instance
 
