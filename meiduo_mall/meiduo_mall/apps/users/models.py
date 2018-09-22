@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from itsdangerous import JSONWebSignatureSerializer as JWSSerializer
+from itsdangerous import JSONWebSignatureSerializer as JWSSerializer, BadData
 
 # Create your models here.
 from django.conf import settings  # 使用我们配置文件dev中的数据可以直接导入这个模块
@@ -39,3 +39,21 @@ class User(AbstractUser):
         verify_url = 'http://www.meiduo.site:8000/success_verify_email.html?token=' + token
 
         return verify_url
+
+    @staticmethod
+    def check_verify_email_token(token):
+        """校验邮箱验证的token是否有效"""
+        serializer = JWSSerializer(settings.SECRET_KEY)
+
+        try:
+            data = serializer.loads(token)
+        except BadData:
+            return None
+        else:
+            # 获取用户id和email
+            id = data.get('id')
+            email = data.get('email')
+
+            user = User.objects.get(id=id, email=email)
+
+            return user

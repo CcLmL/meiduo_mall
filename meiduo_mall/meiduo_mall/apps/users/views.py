@@ -9,6 +9,31 @@ from rest_framework.views import APIView
 # Create your views here.
 
 
+# PUT /emails/verification/?token=<token>
+class EmailVerifyView(APIView):
+    def put(self, request):
+        """
+        用户邮箱验证
+        1. 获取token参数并进行校验(token必传,token是否有效)
+        2. 设置用户邮箱验证的标记为True
+        3. 返回应答,验证通过
+        """
+        # 1. 获取token参数并进行校验(token必传,token是否有效)
+        token = request.query_params.get('token')
+
+        if token is None:
+            return Response({'message': '缺少token参数'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # token是否有效
+        user = User.check_verify_email_token(token)
+
+        if user is None:
+            return Response({'message', '无效的token数据'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3.返回应答,验证通过
+        return Response({'message': 'OK'})
+
+
 # PUT/email/
 # class EmailView(GenericAPIView):
 class EmailView(UpdateAPIView):

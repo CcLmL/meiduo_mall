@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^authorizations/$', obtain_jwt_token),  # obtain_jwt_token = ObtainJSONWebToken.as_view()
     url(r'^user/$', views.UserDetailView.as_view()),
     url(r'^email/$', views.EmailView.as_view()),
+    url(r'^/emails/verification/$', views.EmailVerifyView.as_view())
 ]
