@@ -2,11 +2,30 @@ from django.shortcuts import render
 from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 from areas.models import Area
 from areas.serializer import AreaSerializer, SubAreaSerializer
 
 
 # Create your views here.
+
+# 视图集:将操作同一组资源的处理函数放在同一类中
+class AreaViewSet(ReadOnlyModelViewSet):
+    """
+    地区查询集
+    """
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AreaSerializer
+        else:
+            return SubAreaSerializer
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Area.objects.filter(parent=None)
+        else:
+            return Area.objects.all()
 
 
 # GET /areas/
