@@ -1,5 +1,7 @@
 import re
 
+from django.conf import settings
+from django.core.mail import send_mail
 from django_redis import get_redis_connection
 from rest_framework import serializers
 
@@ -24,6 +26,21 @@ class EmailSerializer(serializers.ModelSerializer):
         instance.save()
 
         # TODO: 发送邮箱验证邮件
+        # 生成邮箱验证的链接地址:http://www.meiduo.site:8000/success_verify_email.html?user_id=<user.id>
+        # 如果链接地址中直接存储用户的信息,可能会造成别人的恶意请求
+        # 在生成邮箱验证的链接地址时,对用户的信息进行加密生成token,把加密之后的token放在链接地址中
+        # http://www.meiduo.site:8000/success_verify_email.html?token=<token>
+        # 所以对每个用户都需要创造一个token,即在数据模型类中添加一个方法
+        verify_url = instance.generate_verify_url()
+
+        # 发送邮件
+        subject = "美多商城邮箱验证"
+        html_message = '<p>尊敬的用户您好！</p>' \
+                       '<p>感谢您使用美多商城。</p>' \
+                       '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
+                       '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+
+        send_mail(subject, '', settings.EMAIL_FROM, [email], html_message=html_message)
 
         return instance
 
