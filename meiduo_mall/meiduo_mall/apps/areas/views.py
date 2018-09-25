@@ -3,6 +3,7 @@ from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from areas.models import Area
 from areas.serializer import AreaSerializer, SubAreaSerializer
@@ -11,7 +12,7 @@ from areas.serializer import AreaSerializer, SubAreaSerializer
 # Create your views here.
 
 # 视图集:将操作同一组资源的处理函数放在同一类中
-class AreaViewSet(ReadOnlyModelViewSet):
+class AreaViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """
     地区查询集
     """
